@@ -52,17 +52,6 @@ const TimeoutMessage = () => (
     </>
 )
 
-// Error message if user/device denied geolocation
-const GeolocationDeniedMessage = () => (
-    <>
-        <Typography variant='h5'><p>Location error! :(</p></Typography>
-        <Typography><p>Unfortunately, we are not able to submit the provided data because your device has denied geolocation access.</p></Typography>
-        <Typography><p>We use geolocation access to get the location of the store.</p></Typography>
-        <Typography><p>Please consult your device settings and try again after enabling it.</p></Typography>
-        <Typography><p>Thank you.</p></Typography>
-    </>
-)
-
 // Error message if files are too big
 const MaxFileSizeExceededMessage = () => (
     <>
@@ -113,11 +102,6 @@ const errorSelector = (err) => {
         return <TimeoutMessage />
     }
 
-    // if user denies location.
-    if (err.message === 'User denied Geolocation') {
-        return <GeolocationDeniedMessage />
-    }
-
     // if file size is too big
     if (err.message === 'Request failed with status code 413') {
         <MaxFileSizeExceededMessage />
@@ -129,10 +113,6 @@ const errorSelector = (err) => {
 
 const CreateForm = () => {
     const router = useRouter()
-
-    // longitude and latitude state variables
-    const [latitude, setLatitude] = useState(null)
-    const [longitude, setLongitude] = useState(null)
 
     // error and loading variables/state
     const [loading, setLoading] = useState(false)
@@ -146,29 +126,6 @@ const CreateForm = () => {
         setErrorObject(err)
         setErrorOpen(true)
     }
-
-    // use effect hook that gets longitude
-    // and latitude as soon as page is loaded
-    useEffect(
-        // callback if location retrieved successfully
-        () => {
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    const crd = pos.coords;
-                    setLatitude(crd.latitude)
-                    setLongitude(crd.longitude)
-                },
-                // callback if error retrieving location
-                (err) => {
-                    errorHandler(err)
-                },
-                // options to use for getting location
-                {
-                    enableHighAccuracy: true,
-                    timeout: 5000,
-                    maximumAge: 0
-                });
-        }, [])
 
     // button
     const [storeButtonColour, setStoreButtonColour] = useState('lightblue')
@@ -311,8 +268,6 @@ const CreateForm = () => {
             ...router.query,
             idProof: compressedProof,
             storePhoto: compressedPhoto,
-            latitude: latitude,
-            longitude: longitude
         }
 
         // add all data to form
@@ -324,7 +279,7 @@ const CreateForm = () => {
         //send data to API
         try {
             // Send request to save form data with 60 second timeout.
-            await axios.post('https://calm-forest-72399.herokuapp.com/api/partners/submit-data-collection-form',
+            await axios.post('http://localhost:8085/api/partners/submit-data-collection-form',
                 formData,
                 { timeout: 60000 })
             router.push('/create/submitted')
