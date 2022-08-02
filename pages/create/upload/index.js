@@ -279,7 +279,7 @@ const CreateForm = () => {
         //send data to API
         try {
             // Send request to save form data with 60 second timeout.
-            await axios.post('http://localhost:8085/api/partners/submit-data-collection-form',
+            await axios.post('https://calm-forest-72399.herokuapp.com/api/partners/submit-data-collection-form',
                 formData,
                 { timeout: 60000 })
             router.push('/create/submitted')

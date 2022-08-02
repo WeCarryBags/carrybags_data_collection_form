@@ -165,7 +165,7 @@ const CreateForm = () => {
         givenLocationData = givenLocationData.filter(l => l !== '')
         const locationString = givenLocationData.join(' ')
         try {
-          const response = await axios.post('http://localhost:8080/api/location/geocode-address',
+          const response = await axios.post('https://calm-forest-72399.herokuapp.com/api/location/geocode-address',
             {
               address: locationString
             })
